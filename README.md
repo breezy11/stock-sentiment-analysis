@@ -12,7 +12,7 @@ This data set consists of two csv files. </br>
 'upload_DJIA_table.csv' file contains the information about the stock price.</br>
 
 'Combined_News_DJIA.csv' file contains the news for each date. </br>
-They are ranked by reddit users votes, and only the top 25 headlines <br/>are considered for a single date.
+They are ranked by reddit users votes, and only the top 25 headlines are considered for a single date.
 
 ## Preparing the data
 
