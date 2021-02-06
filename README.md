@@ -13,8 +13,11 @@ This data set consists of two csv files. </br>
 
 'upload_DJIA_table.csv' file contains the information about the stock price.</br>
 
-'Combined_News_DJIA.csv' file contains the news for each date. </br>
-They are ranked by reddit users votes, and only the top 25 headlines are considered for a single date.
+'Combined_News_DJIA.csv' file contains the news for each date and a label that tracks what direction the stock went. </br>
+"1" when DJIA Adj Close value rose or stayed as the same;
+"0" when DJIA Adj Close value decreased.
+The news are ranked by reddit users votes, and only the top 25 headlines are considered for a single date.
+
 
 ## Preparing the data
 
