@@ -50,7 +50,6 @@ Georgia downs two Russian warplanes as countries move to brink of war" BREAKING:
 #### Subjectivity and Polarity
 
 ```
-# Create two new columns 'Subjectivity' and 'Polarity'
 merge['Subjectivity'] = merge['Combined News'].apply(getSubjectivity)
 merge['Polarity'] = merge['Combined News'].apply(getPolarity)
 ```
