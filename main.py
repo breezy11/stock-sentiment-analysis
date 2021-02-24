@@ -1,29 +1,33 @@
 # Imports
-
+import os
 import pandas as pd
 import numpy as np
 from textblob import TextBlob
 import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import classification_report
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-# Load the data
-df1 = pd.read_csv('data/Combined_News_DJIA.csv')
-df2 = pd.read_csv('data/upload_DJIA_table.csv')
+# Load data
+news = pd.read_csv(os.path.join('Data','combined-news.csv'))
+price = pd.read_csv(os.path.join('Data','value.csv'))
 
-# Merge the data set on the data field
-merge = df1.merge(df2, how='inner', on='Date')
+# Merge the data
+data = news.merge(price, on='Date')
 
-# Show the merged data set
-# print(merge)
+# Shifting the labels by -1 because the label and news were stored with the tomorrow's date
+data['new-label'] = data['Label'].shift(-1).fillna(0).astype(int)
+
+# Show the first 15 rows of selected columns
+print(data[['Date','Open','Close','Adj Close','Label','new-label']].head(15))
+
 
 # Combine the top news headlines
 headlines = []
 
-for row in range(0, len(merge.index)):
-    headlines.append(' '.join(str(x) for x in merge.iloc[row, 2:27]))
+for row in range(0, len(data.index)):
+    headlines.append(' '.join(str(x) for x in data.iloc[row, 2:27]))
 
 # Print a sample of the combined headlines
 # print(headlines[0])
@@ -37,11 +41,11 @@ for i in range(0, len(headlines)):
     clean_headlines[i] = re.sub('b[(")]', '', clean_headlines[i])
     clean_headlines[i] = re.sub("\'", '', clean_headlines[i])
 
-# Add the clean headlines to the merge data set
-merge['Combined News'] = clean_headlines
+# Add the clean headlines to the data set
+data['Combined News'] = clean_headlines
 
 # Show the new column
-# print(merge['Combined News'][0])
+# print(data['Combined News'][0])
 
 # Create a function to get the subjectivity
 def getSubjectivity(text):
@@ -52,11 +56,11 @@ def getPolarity(text):
     return TextBlob(text).sentiment.polarity
 
 # Create two new columns 'Subjectivity' and 'Polarity'
-merge['Subjectivity'] = merge['Combined News'].apply(getSubjectivity)
-merge['Polarity'] = merge['Combined News'].apply(getPolarity)
+data['Subjectivity'] = data['Combined News'].apply(getSubjectivity)
+data['Polarity'] = data['Combined News'].apply(getPolarity)
 
-# Show the first 5 columns in the merge data set
-# print(merge.head(3))
+# Show the first 5 columns in the data set
+# print(data.head(3))
 
 # Create a function to get the sentiment scores
 def getSIA(text):
@@ -71,40 +75,41 @@ pos = []
 neu = []
 SIA = 0
 
-for i in range(0 , len(merge['Combined News'])):
-    SIA = getSIA(merge['Combined News'][i])
+for i in range(0 , len(data['Combined News'])):
+    SIA = getSIA(data['Combined News'][i])
     compound.append(SIA['compound'])
     neg.append(SIA['neg'])
     neu.append(SIA['neu'])
     pos.append(SIA['pos'])
 
-# Store the sentiment scores in the merge data set
-merge['Compound'] = compound
-merge['Negative'] = neg
-merge['Neutral'] = neu
-merge['Positive'] = pos
+# Store the sentiment scores in the data set
+data['Compound'] = compound
+data['Negative'] = neg
+data['Neutral'] = neu
+data['Positive'] = pos
 
-# Show the merge data
-# print(merge)
+# Show the
+# data
+# print(data)
 
 # Create a list of columns to keep
-keep_columns = ['Open','High','Low','Volume','Subjectivity', 'Polarity', 'Compound', 'Negative', 'Neutral', 'Positive', 'Label']
+keep_columns = ['Open','High','Low','Volume','Subjectivity', 'Polarity', 'Compound', 'Negative', 'Neutral', 'Positive', 'new-label']
 
 # Data set used to determine whether the price will increase or decrease
-df = merge[keep_columns]
+df = data[keep_columns]
 
 # Show the data set
 # print(df)
 
 # Create the future data set
 X = df
-X = np.array(X.drop(['Label'], 1))
+X = np.array(X.drop(['new-label'], 1))
 
 # Create the target data set
-y = np.array(df['Label'])
+y = np.array(df['new-label'])
 
 # Split the data into training and test data
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
 # Create and train the model
 model = LinearDiscriminantAnalysis().fit(x_train, y_train)
