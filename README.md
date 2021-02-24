@@ -24,12 +24,19 @@ The news are ranked by reddit users votes, and only the top 25 headlines are con
 #### Getting the data
 
 ```
-df1 = pd.read_csv('data/Combined_News_DJIA.csv')
-df2 = pd.read_csv('data/upload_DJIA_table.csv')
+news = pd.read_csv(os.path.join('Data','combined-news.csv'))
+price = pd.read_csv(os.path.join('Data','value.csv'))
+
 ```
 #### Merge the data set on the data field
 ```
-merge = df1.merge(df2, how='inner', on='Date')
+data = news.merge(price, on='Date')
+```
+
+The dataset has misleading dates and results in a row containing the stocks values from the given date but the label from the previous date.
+
+```
+data['new-label'] = data['Label'].shift(-1).fillna(0).astype(int)
 ```
 
 #### Show an example headline
@@ -53,15 +60,15 @@ Georgia downs two Russian warplanes as countries move to brink of war" BREAKING:
 #### Subjectivity and Polarity
 
 ```
-merge['Subjectivity'] = merge['Combined News'].apply(getSubjectivity)
-merge['Polarity'] = merge['Combined News'].apply(getPolarity)
+data['Subjectivity'] = data['Combined News'].apply(getSubjectivity)
+data['Polarity'] = data['Combined News'].apply(getPolarity)
 ```
 
 #### Get the sentiment scores for each day
 
 ```
-for i in range(0 , len(merge['Combined News'])):
-    SIA = getSIA(merge['Combined News'][i])
+for i in range(0 , len(data['Combined News'])):
+    SIA = getSIA(data['Combined News'][i])
     compound.append(SIA['compound'])
     neg.append(SIA['neg'])
     neu.append(SIA['neu'])
@@ -71,13 +78,13 @@ for i in range(0 , len(merge['Combined News'])):
 #### Creating the train and test data set
 
 ```
-keep_columns = ['Open','High','Low','Volume','Subjectivity', 'Polarity', 'Compound', 'Negative', 'Neutral', 'Positive', 'Label']
-df = merge[keep_columns]
+keep_columns = ['Open','High','Low','Volume','Subjectivity', 'Polarity', 'Compound', 'Negative', 'Neutral', 'Positive', 'new-label']
+df = data[keep_columns]
 
 
 X = df
-X = np.array(X.drop(['Label'], 1))
-y = np.array(df['Label'])
+X = np.array(X.drop(['new-label'], 1))
+y = np.array(df['new-label'])
 
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 ```
@@ -97,9 +104,8 @@ predictions = model.predict(x_test)
 
 |              | precision | recall | f1-score | support |
 |--------------|-----------|--------|----------|---------|
-| 0            | 0.86      | 0.79   | 0.83     | 193     |
-| 1            | 0.82      | 0.88   | 0.85     | 205     |
-| support      |           |        | 0.84     | 398     |
-| macro avg    | 0.84      | 0.84   | 0.84     | 398     |
-| weighted avg | 0.84      | 0.84   | 0.84     | 398     |
-
+| 0            | 0.56      | 0.20   | 0.29     | 193     |
+| 1            | 0.53      | 0.85   | 0.65     | 205     |
+| accuracy      |           |        | 0.54     | 398     |
+| macro avg    | 0.54      | 0.53   | 0.47     | 398     |
+| weighted avg | 0.54      | 0.54   | 0.48     | 398     |
