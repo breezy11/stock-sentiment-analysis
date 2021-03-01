@@ -1,4 +1,4 @@
-# stock-market-sentiment-analysis
+# stock-sentiment-analysis
 This program predicts if the stock price of a company will </br> increase or decrease based on top news headlines.
 
 ## About the data
