@@ -1,5 +1,5 @@
 # stock-sentiment-analysis
-This program predicts if the stock price of a company will </br> increase or decrease based on top news headlines.
+This program predicts if the stock price of a company will increase or decrease based on top news headlines.
 
 ## About the data
 
@@ -26,7 +26,6 @@ The news are ranked by reddit users votes, and only the top 25 headlines are con
 ```
 news = pd.read_csv(os.path.join('Data','combined-news.csv'))
 price = pd.read_csv(os.path.join('Data','value.csv'))
-
 ```
 #### Merge the data set on the data field
 ```
