@@ -88,7 +88,7 @@ y = np.array(df['new-label'])
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 ```
 
-## Create the model and predict
+## Model creation and prediction
 
 #### Train the model
 ```
