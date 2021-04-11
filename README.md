@@ -74,7 +74,7 @@ for i in range(0 , len(data['Combined News'])):
     pos.append(SIA['pos'])
 ```
 
-#### Creating the train and test data set
+#### Creating the train/test data sets
 
 ```
 keep_columns = ['Open','High','Low','Volume','Subjectivity', 'Polarity', 'Compound', 'Negative', 'Neutral', 'Positive', 'new-label']
