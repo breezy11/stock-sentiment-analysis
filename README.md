@@ -1,4 +1,4 @@
-# stock-sentiment-analysis
+# Stock Sentiment Analysis
 This program predicts if the stock index price will increase or decrease based on top news headlines. <br>
 Predictions are based on sentiment scores. The headlines are fed as blocks of texts to TextBlob to get the subjectivity and polarity scores. <br>
 
